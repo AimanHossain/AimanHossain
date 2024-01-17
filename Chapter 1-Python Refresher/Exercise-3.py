@@ -1,23 +1,31 @@
-def is_triangle(a, b, c):
-    return a + b > c and a + c > b and b + c > a
-def classify_triangle(a, b, c):
-    if a == b == c:
+def classify_triangle(side1, side2, side3):
+    if side1 == side2 == side3:
         return "Equilateral"
-    elif a == b or a == c or b == c:
+    elif side1 == side2 or side1 == side3 or side2 == side3:
         return "Isosceles"
     else:
         return "Scalene"
+
 def main():
     try:
-        a = float(input("Enter the length of the first side: "))
-        b = float(input("Enter the length of the second side: "))
-        c = float(input("Enter the length of the third side: "))
-        if a <= 0 or b <= 0 or c <= 0:
-            print("Side lengths must be positive values.")
-        elif is_triangle(a, b, c):
-            triangle_type = classify_triangle(a, b, c)
-            print(f"These side lengths make sense, you can form a triangle of the {triangle_type} type!")
+        # Get the lengths of the sides from the user
+        side1 = float(input("Enter the length of the first side: "))
+        side2 = float(input("Enter the length of the second side: "))
+        side3 = float(input("Enter the length of the third side: "))
+
+        # Check if the sides form a valid triangle using the triangle inequality
+        if side1 + side2 > side3 and side1 + side3 > side2 and side2 + side3 > side1:
+            print("The sides form a valid triangle.")
+
+            # Classify the type of triangle
+            triangle_type = classify_triangle(side1, side2, side3)
+            print(f"The triangle is {triangle_type}.")
+
         else:
-            print("These side lengths cannot form a triangle, as the sum of the side lengths doesn't make sense.")
+            print("The sides do not form a valid triangle.")
+
     except ValueError:
-        print("Please enter valid numeric values for the side lengths.")
+        print("Please enter valid numerical values for the side lengths.")
+
+if __name__ == "__main__":
+    main()
