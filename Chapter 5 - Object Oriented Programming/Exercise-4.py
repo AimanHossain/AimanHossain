@@ -3,7 +3,8 @@ from tkinter import ttk, messagebox
 import math
 
 class Shape:
-    def __init__(self):
+    def __init__(self, app):
+        self.app = app
         self.sides = []
 
     def inputSides(self):
@@ -14,27 +15,49 @@ class Shape:
 
 class Circle(Shape):
     def inputSides(self):
-        radius = float(self.entry_radius.get())
-        self.sides = [radius]
+        radius_str = self.app.entry_radius.get()
+
+        if not radius_str:
+            raise ValueError("Please enter a valid value for the radius.")
+
+        try:
+            self.sides = [float(radius_str)]
+        except ValueError:
+            raise ValueError("Invalid value for the radius. Please enter a number.")
 
     def area(self):
         return math.pi * self.sides[0] ** 2
 
+
 class Rectangle(Shape):
     def inputSides(self):
-        length = float(self.entry_length.get())
-        width = float(self.entry_width.get())
-        self.sides = [length, width]
+        length_str = self.app.entry_length.get()
+        width_str = self.app.entry_width.get()
+
+        if not length_str or not width_str:
+            raise ValueError("Please enter valid values for both length and width.")
+
+        try:
+            self.sides = [float(length_str), float(width_str)]
+        except ValueError:
+            raise ValueError("Invalid values for length or width. Please enter numbers.")
 
     def area(self):
         return self.sides[0] * self.sides[1]
 
 class Triangle(Shape):
     def inputSides(self):
-        side1 = float(self.entry_side1.get())
-        side2 = float(self.entry_side2.get())
-        side3 = float(self.entry_side3.get())
-        self.sides = [side1, side2, side3]
+        side1_str = self.app.entry_side1.get()
+        side2_str = self.app.entry_side2.get()
+        side3_str = self.app.entry_side3.get()
+
+        if not side1_str or not side2_str or not side3_str:
+            raise ValueError("Please enter valid values for all three sides.")
+
+        try:
+            self.sides = [float(side1_str), float(side2_str), float(side3_str)]
+        except ValueError:
+            raise ValueError("Invalid values for the sides. Please enter numbers.")
 
     def area(self):
         s = sum(self.sides) / 2
@@ -53,10 +76,10 @@ class ShapeCalculatorApp:
 
         shape_var = tk.StringVar()
         shape_options = ["Select Shape", "Circle", "Rectangle", "Triangle"]
-        shape_dropdown = ttk.Combobox(self.root, textvariable=shape_var, values=shape_options)
-        shape_dropdown.grid(row=1, column=0, pady=5)
+        self.shape_dropdown = ttk.Combobox(self.root, textvariable=shape_var, values=shape_options)
+        self.shape_dropdown.grid(row=1, column=0, pady=5)
 
-        self.shapes = {"Circle": Circle(), "Rectangle": Rectangle(), "Triangle": Triangle()}
+        self.shapes = {"Circle": Circle(self), "Rectangle": Rectangle(self), "Triangle": Triangle(self)}
 
         self.create_input_fields()
 
@@ -80,20 +103,18 @@ class ShapeCalculatorApp:
         return entry
 
     def calculate_area(self):
-        shape_type = self.shapes.get(self.shapes_var.get())
+        shape_type = self.shapes.get(self.shape_dropdown.get())
 
         if shape_type is None:
             messagebox.showwarning("Warning", "Please select a valid shape.")
             return
 
-        shape_type.inputSides()
-
         try:
+            shape_type.inputSides()
             area = shape_type.area()
-            messagebox.showinfo("Result", f"The area of the {self.shapes_var.get()} is: {area:.2f}")
+            messagebox.showinfo("Result", f"The area of the {self.shape_dropdown.get()} is: {area:.2f}")
         except ValueError as e:
             messagebox.showerror("Error", str(e))
-
 
 if __name__ == "__main__":
     root = tk.Tk()
